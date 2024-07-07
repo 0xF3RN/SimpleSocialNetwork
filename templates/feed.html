@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Лента{% endblock %}
+
+{% block content %}
+    <div class="container">
+        {% if 'username' in session %}
+            <form action="{{ url_for('feed') }}" method="POST" class="post-form">
+                <textarea name="content" placeholder="Напишите свой пост (макс. 200 символов)" maxlength="200" required></textarea><br>
+                <button class="btn-login" type="submit">Добавить пост</button>
+            </form>
+
+            {% if posts %}
+                <h2>Посты пользователей:</h2>
+                {% for post in posts %}
+                    <div class="post">
+                        <div class="post-header">
+                            <span>{{ post.username }}</span>
+                            {% if post.username == session.username %}
+                                <form action="{{ url_for('delete_post', post_id=post.id) }}" method="POST" style="display: inline;">
+                                    <button type="submit" class="btn-delete">Удалить</button>
+                                </form>
+                            {% endif %}
+                        </div>
+                        <p>{{ post.content }}</p>
+                        <div class="post-footer">
+                            <form action="{{ url_for('like', post_id=post.id) }}" method="POST" style="display: inline;">
+                                <button type="submit" class="btn-like">Лайк</button>
+                            </form>
+                            <span class="likes-count">{{ post.likes }}</span>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>Постов пока нет.</p>
+            {% endif %}
+            
+        {% else %}
+            <p>Для просмотра ленты необходимо <a href="{{ url_for('login') }}">войти</a>.</p>
+        {% endif %}
+    </div>
+{% endblock %}
